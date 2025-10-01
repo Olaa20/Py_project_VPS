@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>🌐 Young IT Lab</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <header>
+    <div class="logo">
+      <img src="{{ url_for('static', filename='logo.png') }}" alt="Logo" class="logo-img">
+      <h1><a href="/">Young IT Lab 🚀</a></h1>
+    </div>
+    <nav>
+      <a href="/">Accueil</a>
+      <a href="/monitor/dashboard">Monitoring</a>
+      <a href="/blog">Blog</a>
+      <a href="/about">À propos</a>
+    </nav>
+  </header>
+
+  <main>
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer>
+    <p>© 2025 Young IT Lab - VPS & Réseau</p>
+  </footer>
+</body>
+</html>

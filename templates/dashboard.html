@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>📊 Dashboard Monitoring</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+      body { font-family: Arial, sans-serif; text-align: center; margin: 20px; }
+      h1 { color: #2c3e50; }
+      canvas { max-width: 400px; margin: 20px auto; }
+      #healthStatus {
+          font-size: 22px;
+          font-weight: bold;
+          margin: 20px 0;
+          padding: 10px;
+          border-radius: 8px;
+          display: inline-block;
+          min-width: 120px;
+      }
+      #processList {
+          text-align: left;
+          max-width: 400px;
+          margin: auto;
+          padding: 0;
+          list-style-type: none;
+      }
+      #processList li {
+          padding: 6px;
+          border-bottom: 1px solid #ddd;
+      }
+  </style>
+</head>
+<body>
+  <h1>📊 Dashboard Monitoring VPS</h1>
+
+  <!-- Voyant santé -->
+  <div id="healthStatus">⏳ Vérification...</div>
+
+  <!-- Graphiques -->
+  <canvas id="sysChart"></canvas>
+
+  <!-- Processus -->
+  <h2>Top 5 Processus</h2>
+  <ul id="processList"></ul>
+
+  <script>
+    async function fetchData() {
+      const res = await fetch("/monitor/status");
+      return res.json();
+    }
+
+    async function fetchHealth() {
+      const res = await fetch("/monitor/health");
+      return res.json();
+    }
+
+    async function fetchProcesses() {
+      const res = await fetch("/monitor/processes");
+      return res.json();
+    }
+
+    async function updateDashboard(chart) {
+      // === Mettre à jour stats système ===
+      const data = await fetchData();
+      chart.data.datasets[0].data = [data.cpu_usage, data.ram_usage, data.disk_usage];
+      chart.update();
+
+      // === Mettre à jour santé système ===
+      const health = await fetchHealth();
+      const healthDiv = document.getElementById("healthStatus");
+      if (health.status === "OK") {
+        healthDiv.textContent = "✅ Système OK";
+        healthDiv.style.background = "#2ecc71";  // vert
+        healthDiv.style.color = "white";
+      } else {
+        healthDiv.textContent = "🔴 Alerte !";
+        healthDiv.style.background = "#e74c3c";  // rouge
+        healthDiv.style.color = "white";
+      }
+
+      // === Mettre à jour liste des processus ===
+      const processes = await fetchProcesses();
+      let list = document.getElementById("processList");
+      list.innerHTML = "";
+      processes.forEach(p => {
+        let li = document.createElement("li");
+        li.textContent = `${p.name} (CPU: ${p.cpu_percent}%, RAM: ${p.memory_percent.toFixed(1)}%)`;
+        list.appendChild(li);
+      });
+    }
+
+    // Chart.js setup
+    const ctx = document.getElementById("sysChart");
+    const sysChart = new Chart(ctx, {
+      type: "bar",
+      data: {
+        labels: ["CPU %", "RAM %", "Disk %"],
+        datasets: [{
+          label: "Utilisation",
+          data: [0, 0, 0],
+          backgroundColor: ["#3498db", "#2ecc71", "#e74c3c"]
+        }]
+      },
+      options: { responsive: true, scales: { y: { beginAtZero: true, max: 100 } } }
+    });
+
+    // Refresh toutes les 5s
+    setInterval(() => updateDashboard(sysChart), 5000);
+    updateDashboard(sysChart);
+  </script>
+</body>
+</html>

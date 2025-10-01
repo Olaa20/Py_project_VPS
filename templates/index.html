@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>🚀 Bienvenue sur mon hub VPS</h2>
+<p>Voici mes projets hébergés sur ce serveur :</p>
+
+<div class="grid">
+  <div class="card">
+    <h3>📊 Monitoring</h3>
+    <p>Surveille CPU, RAM, disque et processus en temps réel.</p>
+    <a href="/monitor/dashboard" class="btn">Voir Monitoring</a>
+  </div>
+
+  <div class="card">
+    <h3>📝 Blog</h3>
+    <p>Retrouve tous mes articles sur le VPS, réseau et Linux.</p>
+    <a href="/blog" class="btn">Voir Blog</a>
+  </div>
+
+  <div class="card">
+    <h3>🌡️ IoT (bientôt)</h3>
+    <p>Projets IoT pour collecter et visualiser des données.</p>
+    <a href="#" class="btn disabled">À venir...</a>
+  </div>
+</div>
+{% endblock %}
