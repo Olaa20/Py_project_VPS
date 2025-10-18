@@ -1,40 +1,58 @@
-from flask import Blueprint, render_template
+from flask import Blueprint, render_template, request, redirect, url_for, flash
+from models import db, Article
 
-blog_bp = Blueprint("blog", __name__, template_folder="templates")
+blog_bp = Blueprint('blog', __name__)
 
-# Exemple d’articles
-articles = [
-    {
-        "id": 1,
-        "title": "Mon premier VPS 🚀",
-        "date": "2025-09-01",
-        "summary": "Installation d’un VPS sous Ubuntu 24.04 et configuration SSH.",
-        "content": """
-        Dans cet article, j'explique comment j'ai pris en main mon VPS :
-        - Installation Ubuntu 24.04
-        - Accès SSH avec clé
-        - Premier `sudo apt update && upgrade`
-        """
-    },
-    {
-        "id": 2,
-        "title": "Configurer un firewall UFW 🔥",
-        "date": "2025-09-10",
-        "summary": "Sécurisation du VPS avec UFW (ports SSH, HTTP, HTTPS).",
-        "content": """
-        Étapes réalisées :
-        - `sudo ufw allow OpenSSH`
-        - `sudo ufw allow 80,443/tcp`
-        - `sudo ufw enable`
-        """
-    }
-]
+# Liste publique des articles
+@blog_bp.route('/blog')
+def blog_list():
+    articles = Article.query.order_by(Article.created_at.desc()).all()
+    return render_template('blog2.html', articles=articles)
 
-@blog_bp.route("/blog")
-def blog_home():
-    return render_template("blog2.html", articles=articles)
+# Voir un article
+@blog_bp.route('/blog/<int:id>')
+def blog_post(id):
+    article = Article.query.get_or_404(id)
+    return render_template('post.html', article=article)
 
-@blog_bp.route("/blog/<int:post_id>")
-def blog_post(post_id):
-    post = next((a for a in articles if a["id"] == post_id), None)
-    return render_template("post.html", post=post)
+# 🔵 Interface admin
+@blog_bp.route('/admin')
+def admin_dashboard():
+    articles = Article.query.order_by(Article.created_at.desc()).all()
+    return render_template('admin.html', articles=articles)
+
+# Ajouter un article
+@blog_bp.route('/admin/new', methods=['GET', 'POST'])
+def admin_new():
+    if request.method == 'POST':
+        title = request.form['title']
+        summary = request.form['summary']
+        content = request.form['content']
+        new_article = Article(title=title, summary=summary, content=content)
+        db.session.add(new_article)
+        db.session.commit()
+        flash("✅ Article ajouté avec succès !", "success")
+        return redirect(url_for('blog.admin_dashboard'))
+    return render_template('new_article.html')
+
+# Modifier un article
+@blog_bp.route('/admin/edit/<int:id>', methods=['GET', 'POST'])
+def admin_edit(id):
+    article = Article.query.get_or_404(id)
+    if request.method == 'POST':
+        article.title = request.form['title']
+        article.summary = request.form['summary']
+        article.content = request.form['content']
+        db.session.commit()
+        flash("✏️ Article modifié avec succès !", "info")
+        return redirect(url_for('blog.admin_dashboard'))
+    return render_template('edit_article.html', article=article)
+
+# 🔴 Supprimer un article
+@blog_bp.route('/admin/delete/<int:id>')
+def admin_delete(id):
+    article = Article.query.get_or_404(id)
+    db.session.delete(article)
+    db.session.commit()
+    flash("🗑️ Article supprimé avec succès !", "danger")
+    return redirect(url_for('blog.admin_dashboard'))

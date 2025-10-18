@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>⚙️ Administration du Blog</h2>
+<a href="/admin/new" class="btn">➕ Nouvel article</a>
+
+<table border="0" style="width:100%; margin-top:20px;">
+  <tr>
+    <th>ID</th>
+    <th>Titre</th>
+    <th>Résumé</th>
+    <th>Date</th>
+    <th>Actions</th>
+  </tr>
+  {% for article in articles %}
+  <tr>
+    <td>{{ article.id }}</td>
+    <td>{{ article.title }}</td>
+    <td>{{ article.summary }}</td>
+    <td>{{ article.created_at.strftime('%d/%m/%Y') }}</td>
+    <td>
+      <a href="/blog/{{ article.id }}" class="btn">👁️</a>
+      <a href="/admin/edit/{{ article.id }}" class="btn">✏️</a>
+      <a href="/admin/delete/{{ article.id }}" class="btn" style="background:#e74c3c;">🗑️</a>
+    </td>
+  </tr>
+  {% else %}
+  <tr><td colspan="5">Aucun article trouvé</td></tr>
+  {% endfor %}
+</table>
+{% endblock %}

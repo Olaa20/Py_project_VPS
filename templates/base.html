@@ -21,6 +21,18 @@
   </header>
 
   <main>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    <ul style="list-style:none;">
+      {% for category, message in messages %}
+        <li style="background:#ecf0f1;margin:10px;padding:10px;border-left:4px solid #3498db;">
+          {{ message }}
+        </li>
+      {% endfor %}
+    </ul>
+  {% endif %}
+{% endwith %}
+
     {% block content %}{% endblock %}
   </main>
 

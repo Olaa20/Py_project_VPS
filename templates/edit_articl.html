@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>✏️ Modifier un article</h2>
+<form method="post" style="max-width:600px;margin:auto;">
+  <label>Titre</label>
+  <input type="text" name="title" value="{{ article.title }}" required><br><br>
+
+  <label>Résumé</label>
+  <input type="text" name="summary" value="{{ article.summary }}"><br><br>
+
+  <label>Contenu</label>
+  <textarea name="content" rows="8" required>{{ article.content }}</textarea><br><br>
+
+  <button type="submit" class="btn">💾 Sauvegarder</button>
+</form>
+{% endblock %}

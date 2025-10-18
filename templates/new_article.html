@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>📝 Créer un nouvel article</h2>
+<form method="post" style="max-width:600px;margin:auto;">
+  <label>Titre</label>
+  <input type="text" name="title" required><br><br>
+
+  <label>Résumé</label>
+  <input type="text" name="summary"><br><br>
+
+  <label>Contenu</label>
+  <textarea name="content" rows="8" required></textarea><br><br>
+
+  <button type="submit" class="btn">Publier</button>
+</form>
+{% endblock %}

@@ -3,13 +3,15 @@
 <h2>📚 Mes articles</h2>
 
 <div class="blog-list">
-  {% for article in articles %}
+  {% for article in Article %}
   <div class="blog-item">
     <h3><a href="/blog/{{ article.id }}">{{ article.title }}</a></h3>
-    <p class="date">🗓 {{ article.date }}</p>
+    <p class="date">🗓 {{ article.date_at.strftime('%d %b %Y') }}</p>
     <p class="summary">{{ article.summary }}</p>
     <a href="/blog/{{ article.id }}" class="btn">Lire plus</a>
   </div>
+  {% else %} 
+	<p>Aucun article pour le moment.</p>
   {% endfor %}
 </div>
 {% endblock %}
